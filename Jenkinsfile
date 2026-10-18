@@ -21,21 +21,21 @@ podTemplate(yaml: '''
           - key: .dockerconfigjson
             path: config.json
 ''') {
-  node(POD_LABEL) {
-    stage('Get the project') {
-      checkout scm
+    node(POD_LABEL) {
+        stage('Get the project') {
+            checkout scm
+        }
+        stage('Test') {
+            sh 'test -f Dockerfile && test -f index.html && echo "files OK"'
+        }
+        stage('Build & push image') {
+            container('kaniko') {
+                sh '''
+                    /kaniko/executor --context `pwd` \
+                      --destination crzuy7007/jenkins-helloworld:$BUILD_ID \
+                      --destination crzuy7007/jenkins-helloworld:latest
+                '''
+            }
+        }
     }
-    stage('Test') {
-      sh 'test -f Dockerfile && test -f index.html && echo "files OK"'
-    }
-    stage('Build & push image') {
-      container('kaniko') {
-        sh '''
-          /kaniko/executor --context `pwd` \
-            --destination crzuy7007/jenkins-helloworld:${BUILD_ID} \
-            --destination crzuy7007/jenkins-helloworld:latest
-        '''
-      }
-    }
-  }
 }

@@ -2,6 +2,8 @@ name: Super-Linter
 
 on: push
 
+permissions: {}
+
 jobs:
   super-lint:
     name: Lint code base
